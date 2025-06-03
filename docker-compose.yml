@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  test_authentication:
+    image: tests_image
+    container_name: test_authentication
+    command: python3 test_authentication.py
+    volumes:
+      - ./log.txt:/app/api_log.txt
+    environment:
+      - LOG=1
+    network_mode: host
