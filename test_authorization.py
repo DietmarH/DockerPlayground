@@ -25,7 +25,7 @@ request done at "/{version}/sentiment"
 | password="{password}"
 | sentence=""
 expected result = {expected_status_code}
-actual restult = {status_code}
+actual result = {status_code}
 ==>  {test_status}
 '''.format(
         version=version,
@@ -42,7 +42,7 @@ actual restult = {status_code}
 
 summary = '''
 ============================
-    Authentication test
+    Authorization test
 ============================
 '''
 
