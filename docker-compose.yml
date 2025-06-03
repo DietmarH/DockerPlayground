@@ -9,3 +9,14 @@ services:
     environment:
       - LOG=1
     network_mode: host
+  test_authorization:
+    image: tests_image
+    container_name: test_authorization
+    command: python3 test_authorization.py
+    volumes:
+      - ./log.txt:/app/api_log.txt
+    environment:
+      - LOG=1
+    network_mode: host
+    depends_on:
+      - test_authentication
