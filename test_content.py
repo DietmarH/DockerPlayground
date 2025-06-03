@@ -1,19 +1,22 @@
 import os
 import requests
 
-# definition of the API address
-api_address = 'localhost'  # Use the docker-compose service name
-# API port
+# API address and port (use 'localhost' for host networking, or service name in Docker Compose networks)
+api_address = 'localhost'
 api_port = 8000
 
-
-def test_authorization(data, version):
+def test_content(data, version):
+    """
+    Sends a GET request to the /<version>/sentiment endpoint with a test sentence.
+    Checks if the sentiment score matches the expected sign (positive/negative).
+    Returns a formatted string with the test result and prints it.
+    """
     r = requests.get(
-        url='http://{address}:{port}/{version}/sentiment'.format(address=api_address, port=api_port, version=version),
+        url=f'http://{api_address}:{api_port}/{version}/sentiment',
         params={
             'username': 'alice',  # Using a fixed user for testing
             'password': 'wonderland',  # Using a fixed password for testing
-            'sentence': data['sentence'],  # Using the sentence from the test data
+            'sentence': data['sentence'],
         }
     )
 
@@ -23,34 +26,42 @@ def test_authorization(data, version):
     except Exception:
         score = None
 
+    # Determine the actual sign of the score
+    if score is not None:
+        if score > 0:
+            actual_sign = 'positive'
+        elif score < 0:
+            actual_sign = 'negative'
+        else:
+            actual_sign = 'neutral'
+    else:
+        actual_sign = 'none'
+
+    # Determine if the test passed based on expected and actual sign
     test_status = 'PASSED' if (score is not None and ((score > 0 and data['expected_sign'] == 'positive') or (score < 0 and data['expected_sign'] == 'negative'))) else 'FAILED'
 
-    output = '''
+    # Prepare output for this test case
+    output = f'''
 request done at "/{version}/sentiment"
 | username="alice"
 | password="wonderland"
-| sentence="{sentence}"
-expected sign = {expected_sign}
+| sentence="{data['sentence']}"
+expected sign = {data['expected_sign']}
+actual sign = {actual_sign}
 actual result = {score}
 ==>  {test_status}
-'''.format(
-        version=version,
-        sentence=data['sentence'],
-        expected_sign=data['expected_sign'],
-        score=score,
-        test_status=test_status
-    )
+'''
     print(output)
     return output
 
-
-
+# Summary header for the test log
 summary = '''
 ============================
     Content test
 ============================
 '''
 
+# List of test sentences and their expected sentiment sign
 test_data = [
     {
         'sentence': 'life is beautiful',
@@ -61,11 +72,16 @@ test_data = [
         'expected_sign': 'negative',
     },
 ]
+
+# List of API versions to test
 versions = ['v1', 'v2']
+
+# Run the content test for each sentence and version, append the result to the summary
 for version in versions:
     for data in test_data:
-        summary += test_authorization(data, version)
+        summary += test_content(data, version)
 
+# If the LOG environment variable is set to "1", write the summary to a log file
 if os.environ.get('LOG') == "1":
     with open('api_log.txt', 'a') as file:
         file.write(summary)
