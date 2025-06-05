@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  api:
+    image: datascientest/fastapi:1.0.0 
+    container_name: api_container
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./api:/app
+    environment:
+      - LOG=1
   test_authentication:
     image: tests_image
     container_name: test_authentication
@@ -8,7 +17,8 @@ services:
       - ./log.txt:/app/api_log.txt
     environment:
       - LOG=1
-    network_mode: host
+    depends_on:
+      - api
   test_authorization:
     image: tests_image
     container_name: test_authorization
@@ -17,8 +27,8 @@ services:
       - ./log.txt:/app/api_log.txt
     environment:
       - LOG=1
-    network_mode: host
     depends_on:
+      - api
       - test_authentication
   test_content:
     image: tests_image
@@ -28,6 +38,6 @@ services:
       - ./log.txt:/app/api_log.txt
     environment:
       - LOG=1
-    network_mode: host
     depends_on:
+      - api
       - test_authorization

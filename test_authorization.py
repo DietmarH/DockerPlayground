@@ -2,7 +2,7 @@ import os
 import requests
 
 # API address and port (use 'localhost' for host networking, or service name in Docker Compose networks)
-api_address = 'localhost'
+api_address = 'api'
 api_port = 8000
 
 

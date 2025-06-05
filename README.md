@@ -13,15 +13,6 @@ This project demonstrates how to use Docker and Docker Compose to automate the t
 - `log.txt` — Aggregated log file for test results (mounted from containers).
 - `compose_log.txt` — Output from Docker Compose runs.
 
-## Prerequisites
-
-- **The API server is running**
-- The API server image `datascientest/fastapi:1.0.0` (or compatible) available. You can pull and run it with:
-  ```bash
-  docker pull datascientest/fastapi:1.0.0
-  docker run -d -p 8000:8000 datascientest/fastapi:1.0.0
-  ```
-
 ## Usage
 
 1. **Build and Run Tests**
@@ -31,8 +22,15 @@ This project demonstrates how to use Docker and Docker Compose to automate the t
    This script will:
    - Build the Docker image for tests
    - Remove any old logs
-   - Run all test services via Docker Compose
+   - Run all test services and the API via Docker Compose
    - Save test results to `log.txt`
+   - Automatically stop all containers (including the API) when tests finish
+
+   Alternatively, you can run Docker Compose directly:
+   ```bash
+   docker-compose up --abort-on-container-exit --exit-code-from test_content
+   ```
+   This will stop all services when the last test finishes.
 
 2. **View Results**
    - Check `log.txt` for a summary of all test results.
@@ -41,11 +39,11 @@ This project demonstrates how to use Docker and Docker Compose to automate the t
 ## Customization
 
 - To add new tests, create a new Python script and add a service in `docker-compose.yml` using the same image but a different command.
-- To change the API address, update the `api_address` variable in the test scripts.
+- To change the API address, update the `api_address` variable in the test scripts to use `http://api:8000` (the Docker Compose service name and port).
 
 ## Notes & Best Practices
 - Test scripts use environment variables and mounted volumes to report results back to the host system.
-- For enhanced security and portability, consider configuring Docker networking instead of relying on the host network.
+- The test containers communicate with the API using the service name `api` (the name given to the service in the docker-compose.yaml).
 
 ## License
 
