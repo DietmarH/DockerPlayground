@@ -13,6 +13,16 @@ This project demonstrates how to use Docker and Docker Compose to automate the t
 - `log.txt` — Aggregated log file for test results (mounted from containers).
 - `compose_log.txt` — Output from Docker Compose runs.
 
+## How the Testing Works
+
+All tests are executed using a single Docker image, which is built from the provided `Dockerfile`. This image contains all the required Python scripts for the three different tests:
+
+- `test_authentication.py`
+- `test_authorization.py`
+- `test_content.py`
+
+In the `docker-compose.yml`, three separate containers are created from this one image. Each container runs a different test script by specifying the appropriate command (`CMD`) for that container. This approach ensures consistency, reduces image build time, and makes it easy to add or modify tests in the future—just update the scripts in the image and adjust the service commands as needed.
+
 ## Usage
 
 1. **Build and Run Tests**
